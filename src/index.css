@@ -1,0 +1,687 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 277 40% 4%;
+    --foreground: 220 15% 90%;
+
+    --card: 220 40% 12%;
+    --card-foreground: 220 15% 90%;
+
+    --popover: 220 40% 10%;
+    --popover-foreground: 220 15% 90%;
+
+    --primary: 165 58% 65%;
+    --primary-foreground: 220 45% 8%;
+
+    --secondary: 226 30% 25%;
+    --secondary-foreground: 220 15% 90%;
+
+    --muted: 220 30% 20%;
+    --muted-foreground: 220 15% 65%;
+
+    --accent: 226 100% 68%;
+    --accent-foreground: 220 15% 90%;
+
+    --chart-1: 165 58% 65%;
+    --chart-2: 145 60% 61%;
+    --chart-3: 226 100% 68%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 30% 15%;
+    --input: 220 30% 15%;
+    --ring: 165 58% 65%;
+
+    --radius: 0.75rem;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(220 45% 8%) 0%, hsl(220 40% 12%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(220 40% 12%) 0%, hsl(220 35% 15%) 100%);
+    --gradient-accent: linear-gradient(90deg, hsl(165 58% 65%) 0%, hsl(165 65% 75%) 100%);
+    
+    --shadow-glow: 0 0 20px hsl(165 58% 65% / 0.3);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 220 50% 6%;
+
+    --sidebar-foreground: 220 15% 85%;
+
+    --sidebar-primary: 165 58% 65%;
+
+    --sidebar-primary-foreground: 220 45% 8%;
+
+    --sidebar-accent: 220 40% 12%;
+
+    --sidebar-accent-foreground: 220 15% 85%;
+
+    --sidebar-border: 220 30% 12%;
+
+    --sidebar-ring: 165 58% 65%;
+
+    /* Social Module Glass Design System */
+    --social-glass-bg: 220 40% 12% / 0.85;
+    --social-glass-bg-hover: 220 40% 15% / 0.90;
+    --social-glass-bg-active: 220 40% 18% / 0.95;
+    --social-glass-border: 0 0% 100% / 0.10;
+    --social-text-primary: 0 0% 100%;
+    --social-text-secondary: 0 0% 100% / 0.7;
+    --social-text-tertiary: 0 0% 100% / 0.5;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 220 20% 10%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    --primary: 165 58% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 90%;
+    --secondary-foreground: 220 20% 10%;
+
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 15% 40%;
+
+    --accent: 226 100% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --chart-1: 165 58% 45%;
+    --chart-2: 145 60% 50%;
+    --chart-3: 226 100% 60%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 15% 85%;
+    --input: 220 15% 85%;
+    --ring: 165 58% 45%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 220 20% 10%;
+    --sidebar-primary: 165 58% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 92%;
+    --sidebar-accent-foreground: 220 20% 10%;
+    --sidebar-border: 220 15% 85%;
+    --sidebar-ring: 165 58% 45%;
+  }
+
+  .dim {
+    --background: 220 25% 15%;
+    --foreground: 220 15% 85%;
+
+    --card: 220 30% 18%;
+    --card-foreground: 220 15% 85%;
+
+    --popover: 220 30% 16%;
+    --popover-foreground: 220 15% 85%;
+
+    --primary: 165 58% 60%;
+    --primary-foreground: 220 30% 12%;
+
+    --secondary: 226 25% 30%;
+    --secondary-foreground: 220 15% 85%;
+
+    --muted: 220 25% 22%;
+    --muted-foreground: 220 15% 60%;
+
+    --accent: 226 100% 65%;
+    --accent-foreground: 220 15% 85%;
+
+    --chart-1: 165 58% 60%;
+    --chart-2: 145 60% 58%;
+    --chart-3: 226 100% 65%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 165 58% 60%;
+
+    --sidebar-background: 220 30% 12%;
+    --sidebar-foreground: 220 15% 80%;
+    --sidebar-primary: 165 58% 60%;
+    --sidebar-primary-foreground: 220 30% 12%;
+    --sidebar-accent: 220 30% 18%;
+    --sidebar-accent-foreground: 220 15% 80%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 165 58% 60%;
+  }
+
+  .dark {
+    --background: 260 40% 4%;
+    --foreground: 220 15% 90%;
+
+    --card: 220 40% 12%;
+    --card-foreground: 220 15% 90%;
+
+    --popover: 220 40% 10%;
+    --popover-foreground: 220 15% 90%;
+
+    --primary: 165 58% 65%;
+    --primary-foreground: 220 45% 8%;
+
+    --secondary: 226 30% 25%;
+    --secondary-foreground: 220 15% 90%;
+
+    --muted: 220 30% 20%;
+    --muted-foreground: 220 15% 65%;
+
+    --accent: 226 100% 68%;
+    --accent-foreground: 220 15% 90%;
+
+    --chart-1: 165 58% 65%;
+    --chart-2: 145 60% 61%;
+    --chart-3: 226 100% 68%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 30% 15%;
+    --input: 220 30% 15%;
+    --ring: 165 58% 65%;
+    --sidebar-background: 220 50% 6%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 165 58% 65%;
+    --sidebar-primary-foreground: 220 45% 8%;
+    --sidebar-accent: 220 40% 12%;
+    --sidebar-accent-foreground: 220 15% 85%;
+    --sidebar-border: 220 30% 12%;
+    --sidebar-ring: 165 58% 65%;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 220 20% 10%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    --primary: 165 58% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 90%;
+    --secondary-foreground: 220 20% 10%;
+
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 15% 40%;
+
+    --accent: 226 100% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --chart-1: 165 58% 45%;
+    --chart-2: 145 60% 50%;
+    --chart-3: 226 100% 60%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 15% 85%;
+    --input: 220 15% 85%;
+    --ring: 165 58% 45%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 220 20% 10%;
+    --sidebar-primary: 165 58% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 92%;
+    --sidebar-accent-foreground: 220 20% 10%;
+    --sidebar-border: 220 15% 85%;
+    --sidebar-ring: 165 58% 45%;
+  }
+
+  .dim {
+    --background: 220 25% 15%;
+    --foreground: 220 15% 85%;
+
+    --card: 220 30% 18%;
+    --card-foreground: 220 15% 85%;
+
+    --popover: 220 30% 16%;
+    --popover-foreground: 220 15% 85%;
+
+    --primary: 165 58% 60%;
+    --primary-foreground: 220 30% 12%;
+
+    --secondary: 226 25% 30%;
+    --secondary-foreground: 220 15% 85%;
+
+    --muted: 220 25% 22%;
+    --muted-foreground: 220 15% 60%;
+
+    --accent: 226 100% 65%;
+    --accent-foreground: 220 15% 85%;
+
+    --chart-1: 165 58% 60%;
+    --chart-2: 145 60% 58%;
+    --chart-3: 226 100% 65%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 165 58% 60%;
+
+    --sidebar-background: 220 30% 12%;
+    --sidebar-foreground: 220 15% 80%;
+    --sidebar-primary: 165 58% 60%;
+    --sidebar-primary-foreground: 220 30% 12%;
+    --sidebar-accent: 220 30% 18%;
+    --sidebar-accent-foreground: 220 15% 80%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 165 58% 60%;
+  }
+}
+
+/* Animações do Liquid Glass Switcher */
+@keyframes scaleToggle {
+  0% {
+    scale: 1 1;
+  }
+  50% {
+    scale: 1.1 1;
+  }
+  100% {
+    scale: 1 1;
+  }
+}
+
+@keyframes scaleToggle2 {
+  0% {
+    scale: 1 1;
+  }
+  50% {
+    scale: 1.2 1;
+  }
+  100% {
+    scale: 1 1;
+  }
+}
+
+@keyframes scaleToggle3 {
+  0% {
+    scale: 1 1;
+  }
+  50% {
+    scale: 1.1 1;
+  }
+  100% {
+    scale: 1 1;
+  }
+}
+
+/* Aplicar animação ao slider do platform-nav */
+.platform-slider {
+  animation: none !important;
+}
+
+/* Animação orbital: círculo central → tela cheia → menu no topo */
+@keyframes orbital-reveal-to-menu {
+  /* 0–45%: círculo no centro → expande até cobrir a tela */
+  0% {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 144px;
+    height: 144px;
+    border-radius: 9999px;
+    opacity: 1;
+  }
+  45% {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 240vmax;
+    height: 240vmax;
+    border-radius: 0;
+    opacity: 1;
+  }
+  /* 55%: hold de tela branca */
+  55% {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 240vmax;
+    height: 240vmax;
+    border-radius: 0;
+    opacity: 1;
+  }
+  /* 90%: na posição final do menu, ainda opaco */
+  90% {
+    left: 50%;
+    top: var(--menu-top, 16px);
+    transform: translate(-50%, 0);
+    width: var(--menu-width, 640px);
+    height: var(--menu-height, 72px);
+    border-radius: 9999px;
+    opacity: 1;
+  }
+  /* 100%: fade rápido apenas nos últimos 10% */
+  100% {
+    left: 50%;
+    top: var(--menu-top, 16px);
+    transform: translate(-50%, 0);
+    width: var(--menu-width, 640px);
+    height: var(--menu-height, 72px);
+    border-radius: 9999px;
+    opacity: 0;
+  }
+}
+
+/* Liquid Glass Switcher Styles */
+.switcher {
+  position: relative;
+  display: flex;
+  padding: 0.25rem;
+  border-radius: 9999px;
+  isolation: isolate;
+  background: hsl(var(--card) / 0.3);
+  border: 1px solid hsl(var(--border) / 0.3);
+}
+
+/* Thumb deslizante com efeito liquid */
+.switcher__thumb {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  
+  /* ✨ LIQUID GLASS: fundo translúcido neutro */
+  background: hsl(0 0% 100% / 0.12);
+  
+  /* ✨ LIQUID GLASS: vidro fosco */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  /* ✨ LIQUID GLASS: borda sutil */
+  border: 1px solid hsl(0 0% 100% / 0.18);
+  
+  border-radius: 9999px;
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, filter;
+  filter: url(#toggler);
+  
+  /* ✨ LIQUID GLASS: sombras neutras e brilho inset */
+  box-shadow: 
+    0 4px 12px hsl(0 0% 0% / 0.1),           /* Sombra externa neutra */
+    0 2px 6px hsl(0 0% 0% / 0.05),            /* Sombra secundária */
+    inset 0 1px 0 hsl(0 0% 100% / 0.25),     /* Brilho superior */
+    inset 0 -1px 0 hsl(0 0% 0% / 0.08);      /* Profundidade inferior */
+}
+
+/* Ajuste sutil para tema light */
+.light .switcher__thumb {
+  background: hsl(0 0% 0% / 0.08);
+  border: 1px solid hsl(0 0% 0% / 0.12);
+  box-shadow: 
+    0 4px 12px hsl(0 0% 0% / 0.08),
+    0 2px 6px hsl(0 0% 0% / 0.04),
+    inset 0 1px 0 hsl(0 0% 100% / 0.4),
+    inset 0 -1px 0 hsl(0 0% 0% / 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switcher__thumb { transition: none; filter: none; }
+}
+
+/* Posições do thumb baseadas no tema ativo */
+.switcher[data-previous="1"] .switcher__thumb {
+  transform: translateX(0);
+}
+
+.switcher[data-previous="2"] .switcher__thumb {
+  transform: translateX(2.75rem);
+}
+
+.switcher[data-previous="3"] .switcher__thumb {
+  transform: translateX(5.5rem);
+}
+
+/* Background semi-transparente */
+.switcher__glass-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Conteúdo (ícones) */
+.switcher__glass-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.switcher__legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.switcher__option {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border-radius: 9999px;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.switcher__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.switcher__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  --c: hsl(var(--muted-foreground));
+  transition: var(--transition-smooth);
+}
+
+.switcher__input:checked + .switcher__icon {
+  --c: hsl(var(--primary));
+  filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.5));
+}
+
+.switcher__option:hover .switcher__icon {
+  --c: hsl(var(--foreground));
+  transform: scale(1.1);
+}
+
+.switcher__filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* PlatformNav animations */
+@keyframes dot-bounce-in {
+  0% { transform: translateX(-50%) scale(0); }
+  60% { transform: translateX(-50%) scale(1.5); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+@keyframes nav-ripple {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* Shimmer animation para botão de IA */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Chat loading dots animation */
+@keyframes chat-bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.chat-loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(var(--social-text-secondary));
+  display: inline-block;
+  animation: chat-bounce 1.4s infinite ease-in-out both;
+}
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  /* Scrollbar minimalista */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.15);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* ============= DESIGN SYSTEM UTILITIES ============= */
+
+@layer components {
+  /* Glass Morphism Containers */
+  .glass-card {
+    @apply rounded-2xl border backdrop-blur-md shadow-lg;
+    background: hsl(var(--social-glass-bg));
+    border-color: hsl(var(--social-glass-border));
+  }
+  
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:shadow-2xl hover:scale-[1.02];
+  }
+  
+  .compact-card {
+    @apply p-4 rounded-xl border bg-background/50 backdrop-blur-sm;
+  }
+  
+  .compact-card-hover {
+    @apply compact-card transition-all duration-300 hover:shadow-lg hover:scale-[1.01];
+  }
+  
+  /* Typography */
+  .page-title {
+    @apply text-2xl font-light text-foreground mb-2;
+  }
+  
+  .page-subtitle {
+    @apply text-muted-foreground text-sm;
+  }
+  
+  .card-title {
+    @apply text-base font-medium text-foreground;
+  }
+  
+  .metric-label {
+    @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+  }
+  
+  .metric-value {
+    @apply text-3xl font-bold text-foreground;
+  }
+  
+  /* Buttons */
+  .btn-primary-turquoise {
+    @apply bg-[#05e6cc] hover:bg-[#04cdb8] text-gray-900 font-medium transition-all duration-200;
+  }
+  
+  .btn-icon-ghost {
+    @apply h-8 w-8 p-0 hover:bg-accent transition-all duration-200;
+  }
+  
+  /* Navigation */
+  .nav-item {
+    @apply w-full flex items-start gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 border backdrop-blur-sm bg-background/50 border-border hover:bg-accent text-muted-foreground hover:text-foreground;
+  }
+  
+  .nav-item-active {
+    @apply w-full flex items-start gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 border backdrop-blur-sm bg-primary/20 border-primary/50 text-foreground;
+  }
+  
+  /* States */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 text-center;
+  }
+  
+  .loading-state {
+    @apply flex items-center justify-center py-8;
+  }
+}
