@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeFunction } from "@/lib/supabase-functions";
 import { toast } from "sonner";
 
 export const useSyncInstagramPosts = () => {
@@ -7,16 +7,10 @@ export const useSyncInstagramPosts = () => {
 
   return useMutation({
     mutationFn: async (username: string) => {
-      const { data, error } = await supabase.functions.invoke('instagram-posts-scraper', {
-        body: { username, limit: 30, saveToDatabase: true },
-      });
-
-      if (error) {
-        console.error('Erro ao sincronizar posts:', error);
-        throw error;
-      }
-
-      return data;
+      return invokeFunction<{ savedCount: number; updatedCount: number }>(
+        'instagram-posts-scraper',
+        { username, limit: 30, saveToDatabase: true }
+      );
     },
     onSuccess: (data, username) => {
       // Invalidar query do banco para recarregar posts
@@ -30,9 +24,9 @@ export const useSyncInstagramPosts = () => {
         toast.info("Nenhum post novo encontrado");
       }
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Erro na sincronização:', error);
-      toast.error("Erro ao sincronizar posts. Tente novamente.");
+      toast.error(error.message || "Erro ao sincronizar posts. Tente novamente.");
     },
   });
 };

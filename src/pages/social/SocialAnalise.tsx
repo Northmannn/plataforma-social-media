@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { AddProfileDialog } from "@/components/social/AddProfileDialog";
 import { useInstagramProfiles } from "@/hooks/useInstagramProfiles";
+import { useInstagramSearch } from "@/hooks/useInstagramSearch";
 import { useYouTubeVideos } from "@/hooks/useYouTubeVideos";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronRight, Plus, Trash2, ExternalLink, Sparkles, FileText, Copy, Play } from "lucide-react";
+import { ChevronRight, Plus, Trash2, ExternalLink, Sparkles, FileText, Copy, Play, Search, Loader2, Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -15,6 +16,15 @@ import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type TabType = 'instagram' | 'youtube';
+
+// Busca tolerante a acentos, maiúsculas e ao "@" na frente do username.
+const normalize = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/^@/, "")
+    .trim();
 
 const formatNumber = (num: number | null) => {
   if (!num) return "0";
@@ -43,13 +53,33 @@ const SocialAnalise = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const [addUsername, setAddUsername] = useState<string | undefined>(undefined);
+
   const { profiles, isLoading: profilesLoading, deleteProfile } = useInstagramProfiles();
   const { videos, isLoading: videosLoading, addVideo, deleteVideo, analyzeVideo } = useYouTubeVideos();
+  const { search, results, isSearching, hasSearched, searchError, reset: resetSearch } = useInstagramSearch();
+
+  const normalizedTerm = normalize(searchTerm);
 
   const filteredProfiles = (profiles || []).filter(p =>
-    p.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (p.display_name || "").toLowerCase().includes(searchTerm.toLowerCase())
+    normalize(p.username).includes(normalizedTerm) ||
+    normalize(p.display_name || "").includes(normalizedTerm)
   );
+
+  const savedUsernames = new Set((profiles || []).map(p => p.username.toLowerCase()));
+
+  const handleSearchInstagram = () => {
+    if (!normalizedTerm) {
+      toast.error("Digite um nome ou @username para buscar");
+      return;
+    }
+    search.mutate(searchTerm.trim());
+  };
+
+  const openAddDialog = (username?: string) => {
+    setAddUsername(username);
+    setIsAddDialogOpen(true);
+  };
 
   const handleAddVideo = async () => {
     if (!videoUrl.trim()) return;
@@ -108,24 +138,145 @@ const SocialAnalise = () => {
           {activeTab === 'instagram' && (
             <div>
               {/* Search + Add */}
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="flex-1">
                   <input
                     type="text"
-                    placeholder="Buscar perfil..."
+                    placeholder="Buscar por nome ou @username..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      if (hasSearched || searchError) resetSearch();
+                    }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchInstagram()}
                     className="w-full bg-transparent border-b border-border/30 focus:border-foreground text-sm py-2 outline-none transition-colors text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <button
-                  onClick={() => setIsAddDialogOpen(true)}
+                  onClick={handleSearchInstagram}
+                  disabled={isSearching || !normalizedTerm}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap disabled:opacity-40"
+                >
+                  {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                  {isSearching ? "Buscando..." : "Buscar no Instagram"}
+                </button>
+                <button
+                  onClick={() => openAddDialog()}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap"
                 >
                   <Plus className="h-4 w-4" />
                   Adicionar
                 </button>
               </div>
+
+              <p className="text-xs text-muted-foreground/60 mb-6">
+                A lista abaixo filtra os perfis já salvos. Para encontrar um perfil novo, pressione Enter ou use “Buscar no Instagram”.
+              </p>
+
+              {/* Instagram search results */}
+              {isSearching && (
+                <div className="mb-8 space-y-3">
+                  <span className="text-xs font-medium text-muted-foreground">Resultados do Instagram</span>
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-16 rounded-xl bg-muted/20 animate-pulse" />
+                  ))}
+                </div>
+              )}
+
+              {!isSearching && searchError && (
+                <div className="mb-8 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                  <p className="text-sm text-destructive">{searchError}</p>
+                  <button
+                    onClick={handleSearchInstagram}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2"
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              )}
+
+              {!isSearching && hasSearched && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Resultados do Instagram {results.length > 0 && `(${results.length})`}
+                    </span>
+                    <button
+                      onClick={resetSearch}
+                      className="text-xs text-muted-foreground/60 hover:text-foreground transition-colors"
+                    >
+                      Limpar
+                    </button>
+                  </div>
+
+                  {results.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4">
+                      Nenhum perfil encontrado no Instagram para “{searchTerm.trim()}”.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {results.map((result, index) => {
+                        const alreadySaved = savedUsernames.has(result.username.toLowerCase());
+                        const proxyPicUrl = result.profile_picture_url
+                          ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/image-proxy?url=${encodeURIComponent(result.profile_picture_url)}`
+                          : "";
+
+                        return (
+                          <div
+                            key={result.username}
+                            className="flex items-center gap-3 rounded-xl border border-border/20 bg-card/20 p-3"
+                            style={{ animation: `fadeIn 300ms ease-out ${index * 40}ms both` }}
+                          >
+                            <Avatar className="h-10 w-10 ring-2 ring-border/20">
+                              <AvatarImage src={proxyPicUrl} />
+                              <AvatarFallback className="text-xs bg-muted text-muted-foreground font-medium">
+                                {result.username.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-foreground truncate">
+                                  @{result.username}
+                                </span>
+                                {result.is_verified && (
+                                  <span className="inline-flex items-center text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                                    Verificado
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground/60 mt-0.5">
+                                {result.display_name && <span className="truncate">{result.display_name}</span>}
+                                {result.follower_count !== null && (
+                                  <span>{formatNumber(result.follower_count)} seguidores</span>
+                                )}
+                              </div>
+                            </div>
+
+                            {alreadySaved ? (
+                              <button
+                                onClick={() => navigate(`/social/analise/${result.username}`)}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                                Já adicionado
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => openAddDialog(result.username)}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                Adicionar
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Profile list */}
               {profilesLoading ? (
@@ -135,9 +286,21 @@ const SocialAnalise = () => {
                   ))}
                 </div>
               ) : filteredProfiles.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-8">
-                  {searchTerm ? "Nenhum perfil encontrado" : "Nenhum perfil adicionado ainda"}
-                </p>
+                <div className="py-8">
+                  <p className="text-sm text-muted-foreground">
+                    {searchTerm ? "Nenhum perfil salvo com esse nome" : "Nenhum perfil adicionado ainda"}
+                  </p>
+                  {searchTerm && !hasSearched && (
+                    <button
+                      onClick={handleSearchInstagram}
+                      disabled={isSearching}
+                      className="text-sm text-foreground hover:underline mt-2 inline-flex items-center gap-1.5 disabled:opacity-40"
+                    >
+                      <Search className="h-3.5 w-3.5" />
+                      Buscar “{searchTerm.trim()}” no Instagram
+                    </button>
+                  )}
+                </div>
               ) : (
                 <div className="space-y-3">
                   {filteredProfiles.map((profile, index) => {
@@ -454,7 +617,14 @@ const SocialAnalise = () => {
         </div>
       </div>
 
-      <AddProfileDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} />
+      <AddProfileDialog
+        open={isAddDialogOpen}
+        onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (!open) setAddUsername(undefined);
+        }}
+        initialUsername={addUsername}
+      />
 
       <style>{`
         @keyframes fadeIn {

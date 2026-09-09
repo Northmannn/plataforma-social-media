@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -27,11 +27,15 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useInstagramProfiles } from "@/hooks/useInstagramProfiles";
 import { useSyncInstagramPosts } from "@/hooks/useSyncInstagramPosts";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeFunction } from "@/lib/supabase-functions";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  username: z.string().min(1, "Username é obrigatório").regex(/^[a-zA-Z0-9._]+$/, "Username inválido"),
+  username: z
+    .string()
+    .min(1, "Username é obrigatório")
+    // aceita "@nike", "nike" ou com espaços em volta — normalizado no submit
+    .regex(/^\s*@?[a-zA-Z0-9._]+\s*$/, "Use o @username do perfil (sem espaços ou acentos)"),
   display_name: z.string().optional(),
   category: z.string().optional(),
   notes: z.string().optional(),
@@ -40,9 +44,22 @@ const formSchema = z.object({
 interface AddProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Preenche e busca automaticamente este perfil ao abrir (vindo da busca por nome). */
+  initialUsername?: string;
 }
 
-export const AddProfileDialog = ({ open, onOpenChange }: AddProfileDialogProps) => {
+interface ScrapedProfile {
+  username: string;
+  display_name: string | null;
+  bio: string | null;
+  follower_count: number | null;
+  following_count: number | null;
+  post_count: number | null;
+  profile_picture_url: string | null;
+  is_verified: boolean | null;
+}
+
+export const AddProfileDialog = ({ open, onOpenChange, initialUsername }: AddProfileDialogProps) => {
   const { addProfile } = useInstagramProfiles();
   const syncPosts = useSyncInstagramPosts();
   const [isFetching, setIsFetching] = useState(false);
@@ -67,9 +84,30 @@ export const AddProfileDialog = ({ open, onOpenChange }: AddProfileDialogProps) 
     },
   });
 
-  const handleFetchProfile = async () => {
-    const username = form.getValues("username").replace("@", "").trim();
-    
+  // Guarda o último username auto-buscado para não refazer a chamada a cada render.
+  const autoFetchedFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      autoFetchedFor.current = null;
+      form.reset();
+      setProfileData(null);
+      setFetchError(null);
+      return;
+    }
+    if (!initialUsername || autoFetchedFor.current === initialUsername) return;
+
+    autoFetchedFor.current = initialUsername;
+    form.setValue("username", initialUsername);
+    setProfileData(null);
+    setFetchError(null);
+    handleFetchProfile(initialUsername);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialUsername]);
+
+  const handleFetchProfile = async (usernameOverride?: string) => {
+    const username = (usernameOverride ?? form.getValues("username")).trim().replace(/^@/, "");
+
     if (!username) {
       toast.error("Digite um username primeiro");
       return;
@@ -79,22 +117,11 @@ export const AddProfileDialog = ({ open, onOpenChange }: AddProfileDialogProps) 
     setFetchError(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke(
-        'instagram-profile-scraper',
-        {
-          body: { username }
-        }
-      );
-
-      if (error) throw error;
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      const data = await invokeFunction<ScrapedProfile>('instagram-profile-scraper', { username });
 
       form.setValue("display_name", data.display_name || "");
       form.setValue("username", data.username);
-      
+
       setProfileData({
         bio: data.bio,
         follower_count: data.follower_count,
@@ -115,8 +142,8 @@ export const AddProfileDialog = ({ open, onOpenChange }: AddProfileDialogProps) 
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const username = values.username.replace("@", "");
-    
+    const username = values.username.trim().replace(/^@/, "");
+
     try {
       setIsSyncing(true);
       
@@ -177,7 +204,7 @@ export const AddProfileDialog = ({ open, onOpenChange }: AddProfileDialogProps) 
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={handleFetchProfile}
+                      onClick={() => handleFetchProfile()}
                       disabled={isFetching || !field.value}
                     >
                       {isFetching ? (
